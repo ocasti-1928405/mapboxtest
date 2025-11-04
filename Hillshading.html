@@ -4,9 +4,11 @@
 <meta charset="utf-8">
 <title>Add hillshading</title>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<!-- Mapbox GL JS CSS and JS -->
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.js"></script>
 <style>
+/* Make map fill the window */
 body { margin: 0; padding: 0; }
 #map { position: absolute; top: 0; bottom: 0; width: 100%; }
 </style>
@@ -14,26 +16,35 @@ body { margin: 0; padding: 0; }
 <body>
 <div id="map"></div>
 <script>
+    // Mapbox access token (demo). In production, keep tokens out of client code.
     mapboxgl.accessToken = 'pk.eyJ1Ijoib2Nhc3RpIiwiYSI6ImNtaGJlcHR0bzBkbHEyam9hZjUxdTN2em8ifQ.1dlbHGkcsfz7UDrymlleLA';
+
+    // Create the map. The chosen style here is "standard" which does not
+    // include hillshading by default; we add a DEM source and a hillshade
+    // layer below to render shaded terrain.
     const map = new mapboxgl.Map({
         container: 'map',
-        // The Mapbox Light style doesn't contain hillshading.
-        // You could also add it in Mapbox Studio.
+        // You can change the style to any Mapbox style or a custom one.
         style: 'mapbox://styles/mapbox/standard',
         config: {
-            basemap: {
-                theme: 'monochrome'
-            }
+            basemap: { theme: 'monochrome' }
         },
-        center: [-119.55, 37.71],
+        center: [-119.55, 37.71], // [lng, lat]
         zoom: 9
     });
 
+    // Wait until the style is loaded before adding sources and layers
     map.on('load', () => {
+        // Add a raster-dem source: this is Mapbox's terrain DEM tileset.
+        // 'raster-dem' is the required type for hillshade layers.
         map.addSource('dem', {
             'type': 'raster-dem',
             'url': 'mapbox://mapbox.mapbox-terrain-dem-v1'
         });
+
+        // Add a hillshade layer which renders shaded relief using the DEM
+        // source. The 'slot': 'bottom' option places the layer beneath
+        // other layers (so labels and roads remain visible above the shading).
         map.addLayer({
             'id': 'hillshading',
             'source': 'dem',

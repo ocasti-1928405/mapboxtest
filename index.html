@@ -1,26 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Mapbox GL JS map</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.js"></script>
-<style>
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoib2Nhc3RpIiwiYSI6ImNtaGJlcHR0bzBkbHEyam9hZjUxdTN2em8ifQ.1dlbHGkcsfz7UDrymlleLA';
-    const map = new mapboxgl.Map({
-        container: 'map', // container ID
-        center: [-74.5, 40], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-        zoom: 9 // starting zoom
-    });
-</script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Add custom markers in Mapbox GL JS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Open Sans font used by popups -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+    <!-- Mapbox GL JS library and styles -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Reset page spacing so the map fills the window */
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-</body>
+      /* The map container must have explicit size. We make it full-screen. */
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+
+      /* Style for the custom HTML marker used below */
+      .marker {
+        background-image: url('https://docs.mapbox.com/help/demos/custom-markers-gl-js/mapbox-icon.png');
+        background-size: cover;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%; /* make it circular */
+        cursor: pointer;
+      }
+
+      /* Limit popup width and use the same font as the rest of the page */
+      .mapboxgl-popup {
+        max-width: 200px;
+      }
+
+      .mapboxgl-popup-content {
+        text-align: center;
+        font-family: 'Open Sans', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Map placeholder: Mapbox GL JS will render into this div -->
+    <div id="map"></div>
+
+    <script>
+      // Your Mapbox access token. Keep this secret in real projects —
+      // for demos it's okay to have it in the page.
+      mapboxgl.accessToken = 'pk.eyJ1Ijoib2Nhc3RpIiwiYSI6ImNtaGJlcHR0bzBkbHEyam9hZjUxdTN2em8ifQ.1dlbHGkcsfz7UDrymlleLA';
+
+      /*
+       * GeoJSON data structure (FeatureCollection)
+       * - Each Feature has a geometry (Point with coordinates)
+       * - properties can hold title/description for the popup
+       * This is a common way to store marker data on the web.
+       */
+      const geojson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [-77.032, 38.913] },
+            properties: { title: 'Mapbox', description: 'Washington, D.C.' }
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [-122.414, 37.776] },
+            properties: { title: 'Mapbox', description: 'San Francisco, California' }
+          }
+        ]
+      };
+
+      // Create the map: specify container, style, starting center and zoom
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11', // Mapbox style URL
+        center: [-96, 37.8], // [lng, lat]
+        zoom: 3
+      });
+
+      // When adding markers, we loop over each feature in the geojson above.
+      for (const feature of geojson.features) {
+        // Create a simple HTML element to use as a custom marker.
+        // You can put images, text, or any DOM inside this element.
+        const el = document.createElement('div');
+        el.className = 'marker';
+
+        // The code below creates a Mapbox Marker and places it at the
+        // feature's coordinates. The second Marker sets a Popup that
+        // shows the title and description when clicked.
+        // Note: this example creates two Marker objects for each feature.
+        // The first creates a bare marker, the second creates a marker
+        // that also has a popup. For beginners it's fine, but in practice
+        // you usually only need one Marker with an attached Popup.
+        new mapboxgl.Marker(el).setLngLat(feature.geometry.coordinates).addTo(map);
+
+        new mapboxgl.Marker(el)
+          .setLngLat(feature.geometry.coordinates)
+          .setPopup(
+            // Popups display HTML content. offset keeps the popup from
+            // overlapping the marker icon.
+            new mapboxgl.Popup({ offset: 25 }).setHTML(
+              `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
+            )
+          )
+          .addTo(map);
+      }
+    </script>
+  </body>
 </html>

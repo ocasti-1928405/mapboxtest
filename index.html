@@ -70,14 +70,18 @@
         type: 'FeatureCollection',
         features: [
           {
+            // University of Washington (Seattle)
             type: 'Feature',
-            geometry: { type: 'Point', coordinates: [-77.032, 38.913] },
-            properties: { title: 'Mapbox', description: 'Washington, D.C.' }
+            // longitude, latitude for UW Seattle
+            geometry: { type: 'Point', coordinates: [-122.3035, 47.6553] },
+            properties: { title: 'University of Washington', description: 'Seattle, Washington' }
           },
           {
+            // Los Angeles, California
             type: 'Feature',
-            geometry: { type: 'Point', coordinates: [-122.414, 37.776] },
-            properties: { title: 'Mapbox', description: 'San Francisco, California' }
+            // longitude, latitude for downtown Los Angeles
+            geometry: { type: 'Point', coordinates: [-118.2437, 34.0522] },
+            properties: { title: 'Los Angeles', description: 'Los Angeles, California' }
           }
         ]
       };
@@ -85,7 +89,7 @@
       // Create the map: specify container, style, starting center and zoom
       const map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11', // Mapbox style URL
+        style: 'mapbox://styles/mapbox/navigation-night-v1', // Mapbox style URL
         center: [-96, 37.8], // [lng, lat]
         zoom: 3
       });
